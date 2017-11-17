@@ -21,6 +21,7 @@ class Ship:
 
 
 def calcDistance(ship1, ship2):
+    # print(str(ship1) + " " + str(ship2),file=sys.stderr)
     a = ship1.x - ship2.x
     b = ship1.y - ship2.y
     dist = math.sqrt(a * a + b * b)
@@ -67,7 +68,7 @@ while True:
     shipTogo = None
     for itShip in Ship.listOfReaper:
         instance = Ship.listOfReaper[itShip]
-        if instance.type != 1 and instance.extra > 2:
+        if instance.type == 4:  # and instance.extra > 2:
             dist = calcDistance(instance, myRepear)
             print("DIST " + str(dist), file=sys.stderr)
             if minDist == -1 or minDist > dist:
@@ -75,7 +76,7 @@ while True:
                 shipTogo = instance
 
     print(minDist, file=sys.stderr)
-    print("TT " + str(calcDistance(myRepear, shipTogo)), file=sys.stderr)
+    # print("TT " + str(calcDistance(myRepear,shipTogo)),file=sys.stderr)
     minDist = minDist - shipTogo.radius // 2
     if minDist < 200:
         print("WAIT")
