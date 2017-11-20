@@ -6,6 +6,8 @@ import math
 # the standard input according to the problem statement.
 class Ship:
     listOfReaper = {}
+    myDestroyer = None
+    myReaper = None
 
     def __init__(self):
         self.id = 0
@@ -17,8 +19,87 @@ class Ship:
         self.vx = 0
         self.vy = 0
         self.extra = 0
+        self.extra2 = 0
         self.radius = 0
 
+    def goToNearestRepaer(self):
+        minDist = -1
+        shipTogo = None
+        for itShip in Ship.listOfReaper:
+            instance = Ship.listOfReaper[itShip]
+            #print(str(instance.type) + " " + str(instance.idPlayer),file=sys.stderr)
+            if instance.type == 0 and instance.idPlayer not in (1,0):  # and instance.extra > 2:
+                dist = calcDistance(instance, self)
+                if minDist == -1 or minDist > dist:
+                    minDist = dist
+                    shipTogo = instance
+        print("###" + str(minDist) + "//" + str(shipTogo) , file=sys.stderr)
+        if shipTogo is not None:
+            print(str(shipTogo.x) + " " + str(shipTogo.y) + " 300")
+        else:
+            print("WAIT")
+
+
+
+    def runReaper(self):
+        print("runReaper" , file=sys.stderr)
+        minDist = -1
+        shipTogo = None
+        for itShip in Ship.listOfReaper:
+            instance = Ship.listOfReaper[itShip]
+            if instance.type == 4:  # and instance.extra > 2:
+                dist = calcDistance(instance, self)
+                if minDist == -1 or minDist > dist:
+                    minDist = dist
+                    shipTogo = instance
+
+        print("..." + str(minDist) + "//" + str(shipTogo) , file=sys.stderr)
+        if shipTogo is not None:
+            #minDist = minDist - shipTogo.radius // 2
+            if minDist < 600: # and self.vx != 0:
+                print(str(shipTogo.x) + " " + str(shipTogo.y) + " 80")
+            elif minDist < 1200: # and self.vx != 0:
+                print(str(shipTogo.x) + " " + str(shipTogo.y) + " 180")
+            else:
+                print(str(shipTogo.x) + " " + str(shipTogo.y) + " 250")
+            '''if minDist < 250: # and self.vx != 0:
+                print("WAIT")
+            elif minDist < 1500 and self.vx != 0:
+                print(str(shipTogo.x) + " " + str(shipTogo.y) + " 100")
+            elif minDist < 3500 and self.vx != 0:
+                print(str(shipTogo.x) + " " + str(shipTogo.y) + " 170")
+            else:
+                print(str(shipTogo.x) + " " + str(shipTogo.y) + " 250")
+            '''
+        else:
+            if Ship.myDestroyer is not None:
+                print(str(Ship.myDestroyer.x) + " " + str(Ship.myDestroyer.y) + " 100")
+            else:
+                print("WAIT")
+
+    def runDestroyer(self):
+        print("runDestroyer" , file=sys.stderr)
+        minDist = -1
+        shipTogo = None
+        for itShip in Ship.listOfReaper:
+            instance = Ship.listOfReaper[itShip]
+            if instance.type == 3 and instance.extra > 2:#(instance.extra2 //2):  # and instance.extra > 2:
+                dist = calcDistance(instance, self)
+                if minDist == -1 or minDist > dist:
+                    minDist = dist
+                    shipTogo = instance
+
+        if shipTogo is not None:
+            print(str(shipTogo.x) + " " + str(shipTogo.y) + " 300")
+        else:
+            #self.goToNearestRepaer()
+            print("WAIT")
+
+    def run(self):
+        if self.type == 0:
+            self.runReaper()
+        elif self.type == 1:
+            self.runDestroyer()
 
 def calcDistance(ship1, ship2):
     # print(str(ship1) + " " + str(ship2),file=sys.stderr)
@@ -51,7 +132,10 @@ while True:
         instance.type = int(unit_type)
         instance.idPlayer = int(player)
         if instance.idPlayer == 0:
-            myRepear = instance
+            if instance.type == 0 :
+                Ship.myReaper = instance
+            elif instance.type == 1:
+                Ship.myDestroyer = instance
         instance.mass = float(mass)
         instance.radius = int(radius)
         instance.x = int(x)
@@ -59,33 +143,16 @@ while True:
         instance.vx = int(vx)
         instance.vy = int(vy)
         instance.extra = int(extra)
-        extra_2 = int(extra_2)
+        instance.extra_2 = int(extra_2)
+
 
     # Write an action using print
     # To debug: print("Debug messages...", file=sys.stderr)
 
-    minDist = -1
-    shipTogo = None
-    for itShip in Ship.listOfReaper:
-        instance = Ship.listOfReaper[itShip]
-        if instance.type == 4:  # and instance.extra > 2:
-            dist = calcDistance(instance, myRepear)
-            print("DIST " + str(dist), file=sys.stderr)
-            if minDist == -1 or minDist > dist:
-                minDist = dist
-                shipTogo = instance
+    if Ship.myReaper is not None:
+        Ship.myReaper.run()
+    if Ship.myDestroyer is not None:
+        Ship.myDestroyer.run()
 
-    print(minDist, file=sys.stderr)
-    # print("TT " + str(calcDistance(myRepear,shipTogo)),file=sys.stderr)
-    minDist = minDist - shipTogo.radius // 2
-    if minDist < 200:
-        print("WAIT")
-    # elif minDist < 1000 and myRepear.vx != 0:
-    #    print(str(instance.x) + " " + str(instance.y) +" 75")
-    elif minDist < 4000 and myRepear.vx != 0:
-        print(str(instance.x) + " " + str(instance.y) + " 125")
-    else:
-        print(str(instance.x) + " " + str(instance.y) + " 250")
 
-    print("WAIT")
     print("WAIT")
